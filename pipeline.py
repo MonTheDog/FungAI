@@ -44,7 +44,7 @@ def fix_stalk_root_missing_values(df):
     plt.xticks([0, 1, 2, 3, 4], ["e", "c", "b", "r", "nan"])
     plt.xlabel("stalk-root")
     plt.ylabel("Frequenza")
-    plt.savefig("stalk-root_histogram.png")
+    plt.savefig("images/stalk-root_histogram.png")
     plt.show()
     plt.close("all")
 
@@ -58,7 +58,7 @@ def dataset_balancement(df):
     # Controlliamo se il dataset è bilanciato
     plt.pie(df["poisonous"].value_counts(), labels=["Edible", "Poisonous"], explode=(0, 0.05), autopct="%0.2f",
             colors=["#776754", "#CA0B00"])
-    plt.savefig("poisonous_pie_chart.png")
+    plt.savefig("images/poisonous_pie_chart.png")
     plt.show()
     plt.close("all")
     print("Bilanciamento del dataset: ",
@@ -74,7 +74,7 @@ def produce_histograms(df):
         plt.xticks(range(len(df[column].unique())), df[column].unique())
         plt.xlabel(column)
         plt.ylabel("Frequenza")
-        plt.savefig(column + "_histogram.png")
+        plt.savefig("images/" + column + "_histogram.png")
         plt.show()
         plt.close("all")
 
@@ -229,7 +229,7 @@ def plot_tree_graph(model, columns):
     # Visualizziamo il grafico dell'albero di decisione
     plt.figure(figsize=(10, 10))
     plot_tree(model, filled=True, feature_names=columns, class_names=["Edible", "Poisonous"])
-    plt.savefig("Decision_Tree.png")
+    plt.savefig("images/Decision_Tree.png")
     plt.show()
     plt.close("all")
 
