@@ -2,6 +2,7 @@ import numpy as np
 import streamlit as st
 import pickle
 import pandas as pd
+import sklearn
 
 model = pickle.load(open("Decision_Tree.pickle", 'rb'))
 
