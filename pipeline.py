@@ -71,7 +71,6 @@ def produce_histograms(df):
         plt.hist([df[df["poisonous"] == "e"][column], df[df["poisonous"] == "p"][column]], color=["#776754", "#CA0B00"],
                  stacked=True, bins=range(len(df[column].unique()) + 1), align="left", rwidth=0.7, alpha=0.8)
         plt.legend(["Edible", "Poisonous"])
-        plt.xticks(range(len(df[column].unique())), df[column].unique())
         plt.xlabel(column)
         plt.ylabel("Frequenza")
         plt.savefig("images/" + column + "_histogram.png")

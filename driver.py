@@ -8,12 +8,53 @@ model = pickle.load(open("Decision_Tree.pickle", 'rb'))
 
 
 def get_decision_explanation(classifier, input_features):
-    conversion_dict = {"odor_n": ["Odor", "None"], "stalk-root_c": ["Stalk Root", "Club"],
-                       "stalk-root_r": ["Stalk Root", "Rooted"], "odor_a": ["Odor", "Almond"],
-                       "odor_l": ["Odor", "Anise"], "stalk-surface_y": ["Stalk Surface", "Scaly"],
-                       "spore-print-color_r": ["Spore Print Color", "Green"], "cap-surface_g": ["Cap Surface", "Grooves"],
-                       "cap-shape_c": ["Cap Shape", "Conical"], "gill-size_b": ["Gill Size", "Broad"],
-                       "bruises_t": ["Bruises", "Yes"], "ring-number_o": ["Ring Number", "One"]}
+
+    conversion_dict = {"cap-shape_b": ["Cap Shape", "Bell"], "cap-shape_c": ["Cap Shape", "Conical"],
+                       "cap-shape_f": ["Cap Shape", "Flat"], "cap-shape_k": ["Cap Shape", "Knobbed"],
+                       "cap-shape_s": ["Cap Shape", "Sunken"], "cap-shape_x": ["Cap Shape", "Convex"],
+                       "cap-surface_f": ["Cap Surface", "Fibrous"], "cap-surface_g": ["Cap Surface", "Grooves"],
+                       "cap-surface_s": ["Cap Surface", "Smooth"], "cap-surface_y": ["Cap Surface", "Scaly"],
+                       "cap-color_b": ["Cap Color", "Buff"], "cap-color_c": ["Cap Color", "Cinnamon"],
+                       "cap-color_e": ["Cap Color", "Red"], "cap-color_g": ["Cap Color", "Gray"],
+                       "cap-color_n": ["Cap Color", "Brown"], "cap-color_p": ["Cap Color", "Pink"],
+                       "cap-color_r": ["Cap Color", "Green"], "cap-color_u": ["Cap Color", "Purple"],
+                       "cap-color_w": ["Cap Color", "White"], "cap-color_y": ["Cap Color", "Yellow"],
+                       "bruises_f": ["Bruises", "No"], "bruises_t": ["Bruises", "Yes"], "odor_a": ["Odor", "Almond"],
+                       "odor_c": ["Odor", "Creosote"], "odor_f": ["Odor", "Foul"], "odor_l": ["Odor", "Anise"],
+                       "odor_m": ["Odor", "Musty"], "odor_n": ["Odor", "None"], "odor_p": ["Odor", "Pungent"],
+                       "odor_s": ["Odor", "Spicy"], "odor_y": ["Odor", "Fishy"], "gill-spacing_c": ["Gill Spacing", "Close"],
+                       "gill-spacing_w": ["Gill Spacing", "Crowded"], "gill-size_b": ["Gill Size", "Broad"],
+                       "gill-size_n": ["Gill Size", "Narrow"], "gill-color_b": ["Gill Color", "Buff"],
+                       "gill-color_e": ["Gill Color", "Red"], "gill-color_g": ["Gill Color", "Gray"],
+                       "gill-color_h": ["Gill Color", "Chocolate"], "gill-color_k": ["Gill Color", "Black"],
+                       "gill-color_n": ["Gill Color", "Brown"], "gill-color_o": ["Gill Color", "Orange"],
+                       "gill-color_p": ["Gill Color", "Pink"], "gill-color_r": ["Gill Color", "Green"],
+                       "gill-color_u": ["Gill Color", "Purple"], "gill-color_w": ["Gill Color", "White"],
+                       "gill-color_y": ["Gill Color", "Yellow"], "stalk-shape_e": ["Stalk Shape", "Enlarging"],
+                       "stalk-shape_t": ["Stalk Shape", "Tapering"], "stalk-root_b": ["Stalk Root", "Bulbous"],
+                       "stalk-root_c": ["Stalk Root", "Club"], "stalk-root_e": ["Stalk Root", "Equal"],
+                       "stalk-root_r": ["Stalk Root", "Rooted"], "stalk-surface_f": ["Stalk Surface", "Fibrous"],
+                       "stalk-surface_k": ["Stalk Surface", "Silky"], "stalk-surface_s": ["Stalk Surface", "Smooth"],
+                       "stalk-surface_y": ["Stalk Surface", "Scaly"], "stalk-color_b": ["Stalk Color", "Buff"],
+                       "stalk-color_c": ["Stalk Color", "Cinnamon"], "stalk-color_e": ["Stalk Color", "Red"],
+                       "stalk-color_g": ["Stalk Color", "Gray"], "stalk-color_n": ["Stalk Color", "Brown"],
+                       "stalk-color_o": ["Stalk Color", "Orange"], "stalk-color_p": ["Stalk Color", "Pink"],
+                       "stalk-color_w": ["Stalk Color", "White"], "stalk-color_y": ["Stalk Color", "Yellow"],
+                       "ring-number_n": ["Ring Number", "None"], "ring-number_o": ["Ring Number", "One"],
+                       "ring-number_t": ["Ring Number", "Two"], "ring-type_e": ["Ring Type", "Evanescent"],
+                       "ring-type_f": ["Ring Type", "Flaring"], "ring-type_l": ["Ring Type", "Large"],
+                       "ring-type_n": ["Ring Type", "None"], "ring-type_p": ["Ring Type", "Pendant"],
+                       "spore-print-color_b": ["Spore Print Color", "Buff"], "spore-print-color_h": ["Spore Print Color", "Chocolate"],
+                       "spore-print-color_k": ["Spore Print Color", "Black"], "spore-print-color_n": ["Spore Print Color", "Brown"],
+                       "spore-print-color_o": ["Spore Print Color", "Orange"], "spore-print-color_r": ["Spore Print Color", "Green"],
+                       "spore-print-color_u": ["Spore Print Color", "Purple"], "spore-print-color_w": ["Spore Print Color", "White"],
+                       "spore-print-color_y": ["Spore Print Color", "Yellow"], "population_a": ["Population", "Abundant"],
+                       "population_c": ["Population", "Clustered"], "population_n": ["Population", "Numerous"],
+                       "population_s": ["Population", "Scattered"], "population_v": ["Population", "Several"],
+                       "population_y": ["Population", "Solitary"], "habitat_d": ["Habitat", "Woods"],
+                       "habitat_g": ["Habitat", "Grasses"], "habitat_l": ["Habitat", "Leaves"],
+                       "habitat_m": ["Habitat", "Meadows"], "habitat_p": ["Habitat", "Paths"],
+                       "habitat_u": ["Habitat", "Urban"], "habitat_w": ["Habitat", "Waste"]}
 
     columns = ['cap-shape_b', 'cap-shape_c', 'cap-shape_f', 'cap-shape_k', 'cap-shape_s', 'cap-shape_x',
                'cap-surface_f', 'cap-surface_g', 'cap-surface_s', 'cap-surface_y', 'cap-color_b', 'cap-color_c',
@@ -94,6 +135,8 @@ mushroom_dict = {
     'habitat_d': 0, 'habitat_g': 0, 'habitat_l': 0, 'habitat_m': 0,
     'habitat_p': 0, 'habitat_u': 0, 'habitat_w': 0
 }
+st.markdown("<h1 style='text-align: center;'>FungAI</h1>", unsafe_allow_html=True)
+st.image("images/fungAI_logo.png", use_column_width=True)
 
 st.subheader("Cap Features")
 
@@ -434,3 +477,6 @@ if st.button("Predict"):
     st.write("Why am I getting this response?")
     for i, item in enumerate(result, start=1):
         st.write(i, " - ", item)
+
+st.markdown("<p style='text-align: right;'>Created by MonTheDog 🌠 </p>", unsafe_allow_html=True)
+
