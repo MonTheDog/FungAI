@@ -140,7 +140,7 @@ def train_models(models, encoded_dataset, y_train):
 #         models[key].fit(X_train, y_train)
 
 
-def test_models(models, encoded_dataset, y_test, filename):
+def test_models(models, encoded_dataset, y_test):
     # Prepariamo le liste per le metriche
     accuracy_list, precision_list, recall_list, f1_list, auc_list = [], [], [], [], []
     X_test = encoded_dataset.to_numpy()
@@ -184,86 +184,57 @@ def test_models(models, encoded_dataset, y_test, filename):
     scores = pd.DataFrame({"Accuracy": accuracy_list, "Precision": precision_list, "Recall": recall_list, "F1": f1_list, "AUC": auc_list}, index=models.keys())
     print(scores)
 
-    scores.to_csv(filename + ".csv")
+    scores.to_csv("scores.csv")
 
 
-def naive_bayes_fine_tuning(X, y):
-    X = X.to_numpy()
+# def naive_bayes_fine_tuning(X, y):
+#     X = X.to_numpy()
+#
+#     # Andiamo a fare un fine tuning dei parametri utilizzando GridSearchCV
+#     param_grid = {
+#         "var_smoothing": np.logspace(0, -9, num=100)
+#     }
+#
+#     naive_bayes = GaussianNB()
+#     grid_search = GridSearchCV(estimator=naive_bayes, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2, refit="True", scoring="accuracy")
+#     grid_search.fit(X, y)
+#
+#     print(grid_search.best_params_)
+#
+#     # Restituiamo il modello con i parametri ottimizzati
+#     return grid_search.best_estimator_
 
-    # Andiamo a fare un fine tuning dei parametri utilizzando GridSearchCV
-    param_grid = {
-        "var_smoothing": np.logspace(0, -9, num=100)
-    }
 
-    naive_bayes = GaussianNB()
-    grid_search = GridSearchCV(estimator=naive_bayes, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2, refit="True", scoring="accuracy")
-    grid_search.fit(X, y)
-
-    print(grid_search.best_params_)
-
-    # Restituiamo il modello con i parametri ottimizzati
-    return grid_search.best_estimator_
-
-
-def decision_tree_fine_tuning(X, y):
-    X = X.to_numpy()
-
-    # Andiamo a fare un fine tuning dei parametri utilizzando GridSearchCV
-    param_grid = {
-        "criterion": ["gini", "entropy"],
-        "splitter": ["best", "random"],
-        "max_depth": [None, 10, 20, 30, 40, 50],
-        "min_samples_split": [2, 5, 10],
-        "min_samples_leaf": [1, 2, 4]
-    }
-
-    tree = DecisionTreeClassifier()
-    grid_search = GridSearchCV(estimator=tree, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2, refit="True", scoring="accuracy")
-    grid_search.fit(X, y)
-
-    print(grid_search.best_params_)
-
-    # Restituiamo il modello con i parametri ottimizzati
-    return grid_search.best_estimator_
+# def decision_tree_fine_tuning(X, y):
+#     X = X.to_numpy()
+#
+#     # Andiamo a fare un fine tuning dei parametri utilizzando GridSearchCV
+#     param_grid = {
+#         "criterion": ["gini", "entropy"],
+#         "splitter": ["best", "random"],
+#         "max_depth": [None, 10, 20, 30, 40, 50],
+#         "min_samples_split": [2, 5, 10],
+#         "min_samples_leaf": [1, 2, 4]
+#     }
+#
+#     tree = DecisionTreeClassifier()
+#     grid_search = GridSearchCV(estimator=tree, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2, refit="True", scoring="accuracy")
+#     grid_search.fit(X, y)
+#
+#     print(grid_search.best_params_)
+#
+#     # Restituiamo il modello con i parametri ottimizzati
+#     return grid_search.best_estimator_
 
 
 def plot_tree_graph(model, columns):
     # Visualizziamo il grafico dell'albero di decisione
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(15, 15))
     plot_tree(model, filled=True, feature_names=columns, class_names=["Edible", "Poisonous"])
     plt.savefig("images/Decision_Tree.png")
     plt.show()
     plt.close("all")
 
-
-def get_decision_explanation(classifier, input_features, columns):
-    # Cambiamo la forma dell'input in modo che sia compatibile con il modello
-    input_features = input_features.reshape(1, -1)
-
-    # Otteniamo il decision path e l'id dei nodi foglia
-    node_indicator = classifier.decision_path(input_features)
-    leaf_id = classifier.apply(input_features)
-
-    result = []
-
-    sample_id = 0
-    # Ottiene gli id dei nodi attraversati dal campione
-    node_index = node_indicator.indices[node_indicator.indptr[sample_id]: node_indicator.indptr[sample_id + 1]]
-
-    for node_id in node_index:
-        # Se il nodo è una foglia, non lo consideriamo
-        if leaf_id[sample_id] == node_id:
-            continue
-
-        # Altrimenti otteniamo il nome della feature e il valore utilizzato per la decisione
-        feature_index = classifier.tree_.feature[node_id]
-        feature_name = columns[feature_index-1] if columns else str(feature_index)
-
-        # Aggiungiamo la spiegazione alla lista
-        explanations = "%s %s %s" % (feature_name, "=", input_features[sample_id, classifier.tree_.feature[node_id]])
-        result.append(explanations)
-
-    return result
 
 # Main
 if __name__ == "__main__":
@@ -315,6 +286,7 @@ if __name__ == "__main__":
 
     encoded_dataset_test = encode_variables(X_test)
     encoded_dataset_test["cap-shape_c"] = 0
+    encoded_dataset_test = encoded_dataset_test[[col for col in encoded_dataset_train.columns]]
     encoded_dataset_test = encoded_dataset_test.astype(int)
 
     # Il nostro dataset è ora pronto per essere utilizzato nei modelli di machine learning
@@ -326,29 +298,12 @@ if __name__ == "__main__":
     train_models(models, encoded_dataset_train, y_train)
 
     # Andiamo a testare i modelli
-    test_models(models, encoded_dataset_test, y_test, "initial_models_scores")
-
-    # I modelli con le performance migliori sono Decision Tree e Naive Bayes, ma hanno comunque performance poco
-    # desiderabili. Andiamo quindi a fare un fine tuning dei parametri utilizzando GridSearchCV
-    tuned_models = {"Tuned_Naive_Bayes": naive_bayes_fine_tuning(encoded_dataset_train, y_train),
-                    "Tuned_Decision_Tree": decision_tree_fine_tuning(encoded_dataset_train, y_train)}
-
-    # Andiamo a testare i modelli con i parametri ottimizzati
-    test_models(tuned_models, encoded_dataset_test, y_test, "tuned_models_scores")
-
-    # Curiosamente Naive Bayes ha peggiorato le sue performance, mentre Decision Tree ha avuto un miglioramento
-    # leggero. In particolare la Recall di Decision Tree è sensibilmente migliore rispetto a Naive Bayes, e considerando
-    # che in questo caso è più importante avere una bassa percentuale di falsi negativi, Decision Tree risulta essere il
-    # modello migliore. Inoltre Decision Tree ha una explainability maggiore rispetto a Naive Bayes, rendendolo il
-    # modello migliore per questo caso specifico.
+    test_models(models, encoded_dataset_test, y_test)
 
     # Andiamo a visualizzare il grafico dell'albero di decisione
-    plot_tree_graph(tuned_models["Tuned_Decision_Tree"], encoded_dataset_train.columns)
+    plot_tree_graph(models["Decision_Tree"], encoded_dataset_train.columns)
 
     # Salviamo il modello
     with open("Decision_Tree.pickle", "wb") as f:
-        pickle.dump(tuned_models["Tuned_Decision_Tree"], f)
+        pickle.dump(models["Decision_Tree"], f)
 
-    # column_names = encoded_dataset_test.columns.to_list()
-    # result = get_decision_explanation(tuned_models["Tuned_Decision_Tree"], encoded_dataset_test.iloc[123].to_numpy(), column_names)
-    # print(result)
