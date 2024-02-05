@@ -7,7 +7,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import BernoulliNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 # from sklearn.model_selection import StratifiedKFold
@@ -290,7 +290,7 @@ if __name__ == "__main__":
 
     # Il nostro dataset è ora pronto per essere utilizzato nei modelli di machine learning
     # Testeremo Naive Bayes, Decision Tree, Random Forest, KNN e SVM
-    models = {"Naive_Bayes": GaussianNB(), "Decision_Tree": DecisionTreeClassifier(),
+    models = {"Naive_Bayes": BernoulliNB(), "Decision_Tree": DecisionTreeClassifier(),
               "Random_Forest": RandomForestClassifier(), "KNN": KNeighborsClassifier(), "SVM": SVC(kernel="rbf")}
 
     # Andiamo ad addestrare i modelli

@@ -1,5 +1,5 @@
 ,Accuracy,Precision,Recall,F1,AUC
-Naive_Bayes,0.9902,0.9824,0.9974,0.9899,0.9904
+Naive_Bayes,0.9471,0.9741,0.9144,0.9433,0.9459
 Decision_Tree,1.0,1.0,1.0,1.0,1.0
 Random_Forest,1.0,1.0,1.0,1.0,1.0
 KNN,1.0,1.0,1.0,1.0,1.0
