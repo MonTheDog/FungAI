@@ -140,7 +140,7 @@ def train_models(models, encoded_dataset, y_train):
 #         models[key].fit(X_train, y_train)
 
 
-def test_models(models, encoded_dataset, y_test):
+def test_models(models, encoded_dataset, y_test, filename):
     # Prepariamo le liste per le metriche
     accuracy_list, precision_list, recall_list, f1_list, auc_list = [], [], [], [], []
     X_test = encoded_dataset.to_numpy()
@@ -163,14 +163,14 @@ def test_models(models, encoded_dataset, y_test):
         plt.xlabel("False Positive Rate")
         plt.ylabel("True Positive Rate")
         plt.title("ROC curve " + key)
-        plt.savefig(key + "_roc_curve.png")
+        plt.savefig("images/" + key + "_roc_curve.png")
         plt.show()
         plt.close("all")
 
         matrix = confusion_matrix(y_true=y_test, y_pred=y_pred)
         sns.heatmap(matrix, annot=True, cmap="Blues", fmt="d")
         plt.title("Confusion Matrix " + key)
-        plt.savefig(key + "_confusion_matrix.png")
+        plt.savefig("images/" + key + "_confusion_matrix.png")
         plt.show()
         plt.close("all")
 
@@ -183,6 +183,8 @@ def test_models(models, encoded_dataset, y_test):
     # Visualizziamo le performance sotto forma di tabella
     scores = pd.DataFrame({"Accuracy": accuracy_list, "Precision": precision_list, "Recall": recall_list, "F1": f1_list, "AUC": auc_list}, index=models.keys())
     print(scores)
+
+    scores.to_csv(filename + ".csv")
 
 
 def naive_bayes_fine_tuning(X, y):
@@ -324,7 +326,7 @@ if __name__ == "__main__":
     train_models(models, encoded_dataset_train, y_train)
 
     # Andiamo a testare i modelli
-    test_models(models, encoded_dataset_test, y_test)
+    test_models(models, encoded_dataset_test, y_test, "initial_models_scores")
 
     # I modelli con le performance migliori sono Decision Tree e Naive Bayes, ma hanno comunque performance poco
     # desiderabili. Andiamo quindi a fare un fine tuning dei parametri utilizzando GridSearchCV
@@ -332,14 +334,13 @@ if __name__ == "__main__":
                     "Tuned_Decision_Tree": decision_tree_fine_tuning(encoded_dataset_train, y_train)}
 
     # Andiamo a testare i modelli con i parametri ottimizzati
-    test_models(tuned_models, encoded_dataset_test, y_test)
+    test_models(tuned_models, encoded_dataset_test, y_test, "tuned_models_scores")
 
-    # TODO ricontrollare ed eventualmente rimuovere
-    # Curiosamente il Decision Tree non ha migliorato le sue performance, mentre Naive Bayes ha avuto un miglioramento
-    # leggero. Nonostante questo però, Decision Tree ha una Recall sensibilmente migliore rispetto a Naive Bayes, e
-    # considerando che in questo caso è più importante avere una bassa percentuale di falsi negativi, Decision Tree
-    # risulta essere il modello migliore. Inoltre Decision Tree ha una explainability maggiore rispetto a Naive Bayes,
-    # rendendolo il modello migliore per questo caso specifico.
+    # Curiosamente Naive Bayes ha peggiorato le sue performance, mentre Decision Tree ha avuto un miglioramento
+    # leggero. In particolare la Recall di Decision Tree è sensibilmente migliore rispetto a Naive Bayes, e considerando
+    # che in questo caso è più importante avere una bassa percentuale di falsi negativi, Decision Tree risulta essere il
+    # modello migliore. Inoltre Decision Tree ha una explainability maggiore rispetto a Naive Bayes, rendendolo il
+    # modello migliore per questo caso specifico.
 
     # Andiamo a visualizzare il grafico dell'albero di decisione
     plot_tree_graph(tuned_models["Tuned_Decision_Tree"], encoded_dataset_train.columns)
