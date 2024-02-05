@@ -8,7 +8,10 @@ model = pickle.load(open("Decision_Tree.pickle", 'rb'))
 
 
 def get_decision_explanation(classifier, input_features):
+    # Inizializziamo la lista dei risultati
+    result = []
 
+    # Dizionario per convertire le feature del One Hot Encoding in feature leggibili dall'utente
     conversion_dict = {"cap-shape_b": ["Cap Shape", "Bell"], "cap-shape_c": ["Cap Shape", "Conical"],
                        "cap-shape_f": ["Cap Shape", "Flat"], "cap-shape_k": ["Cap Shape", "Knobbed"],
                        "cap-shape_s": ["Cap Shape", "Sunken"], "cap-shape_x": ["Cap Shape", "Convex"],
@@ -56,6 +59,7 @@ def get_decision_explanation(classifier, input_features):
                        "habitat_m": ["Habitat", "Meadows"], "habitat_p": ["Habitat", "Paths"],
                        "habitat_u": ["Habitat", "Urban"], "habitat_w": ["Habitat", "Waste"]}
 
+    # Lista delle colonne del Dataset
     columns = ['cap-shape_b', 'cap-shape_c', 'cap-shape_f', 'cap-shape_k', 'cap-shape_s', 'cap-shape_x',
                'cap-surface_f', 'cap-surface_g', 'cap-surface_s', 'cap-surface_y', 'cap-color_b', 'cap-color_c',
                'cap-color_e', 'cap-color_g', 'cap-color_n', 'cap-color_p', 'cap-color_r', 'cap-color_u', 'cap-color_w',
@@ -80,8 +84,6 @@ def get_decision_explanation(classifier, input_features):
     node_indicator = classifier.decision_path(input_features)
     leaf_id = classifier.apply(input_features)
 
-    result = []
-
     sample_id = 0
     # Ottiene gli id dei nodi attraversati dal campione
     node_index = node_indicator.indices[node_indicator.indptr[sample_id]: node_indicator.indptr[sample_id + 1]]
@@ -102,7 +104,6 @@ def get_decision_explanation(classifier, input_features):
             verb = "is"
 
         explanations = "%s %s %s" % (conversion_dict[feature_name][0], verb, conversion_dict[feature_name][1])
-
         result.append(explanations)
 
     return result
